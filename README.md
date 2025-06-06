@@ -1,8 +1,8 @@
-# OpenCertify
+# Forge
 
 **OpenCertify** is a lightweight, open-source certificate generator that creates verifiable PDF certificates with embedded QR codes and SHA256 hashes. Ideal for online courses, hackathons, or internal training programs.
 
-## ✨ Features
+## Features
 
 - Generate custom PDF certificates
 - Embed SHA256-based verification codes
@@ -10,7 +10,7 @@
 - Minimal frontend interface (HTML/CSS)
 - Simple backend with Python (no login required)
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 backend/
@@ -30,7 +30,7 @@ README.md
 requirements.txt
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install dependencies
 ```bash
@@ -45,6 +45,6 @@ python backend/app.py
 ### 3. Output
 A certificate PDF will be created in the `/output` folder with an embedded QR code and verification hash.
 
-## 📜 License
+## License
 
 MIT License – free to use, modify, and distribute.
