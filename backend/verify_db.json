@@ -16,5 +16,9 @@
         "course": "2b23",
         "date": "2007-05-04",
         "issuer": "lennardddaw"
+    },
+    "181056d6b5242672a3438e18a2816e901f64ae4050646daa7e36487fb270a73c": {
+        "source": "Group 5.pdf",
+        "signed": true
     }
 }

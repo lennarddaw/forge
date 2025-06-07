@@ -27,6 +27,12 @@
 
 <div id="gen_result"></div>
 
+<form action="http://127.0.0.1:8000/sign-pdf" method="post" enctype="multipart/form-data">
+  <input type="file" name="file" accept="application/pdf">
+  <button type="submit">PDF signieren</button>
+</form>
+
+
 <script>
   const genForm = document.getElementById("generateForm");
   const genResult = document.getElementById("gen_result");
