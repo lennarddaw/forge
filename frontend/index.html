@@ -2,89 +2,128 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OpenCertify – Zertifikat prüfen</title>
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root {
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --accent: #6200ee;
+      --text-primary: #e0e0e0;
+      --text-secondary: #a0a0a0;
+      --border: #333;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container {
+      background: var(--surface);
+      width: 100%;
+      max-width: 480px;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+      text-align: center;
+    }
+    .drop-zone {
+      border: 2px dashed var(--border);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      transition: background-color 0.2s;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+    .drop-zone.hover {
+      background-color: rgba(255,255,255,0.05);
+    }
+    .drop-zone p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+    .result {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.3);
+      min-height: 4rem;
+      color: var(--text-primary);
+    }
+    form {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    input[type="file"] {
+      flex: 1;
+      color: var(--text-secondary);
+    }
+    button {
+      padding: 0.6rem 1.2rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #4500b5;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>🔍 PDF Signieren & Prüfen</h1>
+    <h1>PDF Signieren &amp; Prüfen</h1>
     <div id="dropZone" class="drop-zone">
-  <p>📄 Zieh hier deine signierte PDF hinein, um sie automatisch zu prüfen</p>
-</div>
-
-    <div id="result"></div>
-    <hr>
-
-<form action="http://127.0.0.1:8000/sign-pdf" method="post" enctype="multipart/form-data">
-  <input type="file" name="file" accept="application/pdf">
-  <button type="submit">PDF signieren</button>
-</form>
-
+      <p>Zieh hier deine signierte PDF hinein, um sie zu prüfen</p>
+    </div>
+    <div id="result" class="result"></div>
+    <hr style="border-color: var(--border); margin: 1.5rem 0;">
+    <form action="http://127.0.0.1:8000/sign-pdf" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" accept="application/pdf">
+      <button type="submit">PDF signieren</button>
+    </form>
   </div>
-
   <script>
-    const form = document.getElementById("verifyForm");
     const result = document.getElementById("result");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const hash = document.getElementById("hash").value.trim();
-      const res = await fetch(`http://127.0.0.1:8000/verify/${hash}`);
+    const dropZone = document.getElementById("dropZone");
+    dropZone.addEventListener("dragover", e => {
+      e.preventDefault(); dropZone.classList.add("hover");
+    });
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("hover");
+    });
+    dropZone.addEventListener("drop", async e => {
+      e.preventDefault(); dropZone.classList.remove("hover");
+      const file = e.dataTransfer.files[0];
+      if (!file || file.type !== "application/pdf") {
+        result.textContent = "❌ Nur PDF-Dateien erlaubt.";
+        return;
+      }
+      const formData = new FormData(); formData.append("file", file);
+      const res = await fetch("http://127.0.0.1:8000/verify-pdf", { method: "POST", body: formData });
       const data = await res.json();
-
       if (data.valid) {
-        result.innerHTML = `
-          ✅ <strong>Gültiges Zertifikat</strong><br>
-          <ul>
-            <li><b>Name:</b> ${data.data.name}</li>
-            <li><b>Kurs:</b> ${data.data.course}</li>
-            <li><b>Datum:</b> ${data.data.date}</li>
-            <li><b>Aussteller:</b> ${data.data.issuer}</li>
-          </ul>
-        `;
+        result.innerHTML = `✅ <strong>Gültiges Zertifikat</strong><ul style="margin-top:0.5rem; list-style:none; padding:0;"><li>Name: ${data.data.name||data.data.source}</li><li>Kurs: ${data.data.course||data.data.source}</li><li>Datum: ${data.data.date||"–"}</li><li>Aussteller: ${data.data.issuer||"–"}</li></ul>`;
       } else {
-        result.innerHTML = `❌ Ungültig: ${data.message}`;
+        result.textContent = `❌ Ungültig: ${data.message}`;
       }
     });
   </script>
-  <script>
-  const dropZone = document.getElementById("dropZone");
-  dropZone.addEventListener("dragover", e => {
-    e.preventDefault();
-    dropZone.classList.add("hover");
-  });
-  dropZone.addEventListener("dragleave", () => {
-    dropZone.classList.remove("hover");
-  });
-  dropZone.addEventListener("drop", async e => {
-    e.preventDefault();
-    dropZone.classList.remove("hover");
-    const file = e.dataTransfer.files[0];
-    if (!file || file.type !== "application/pdf") {
-      result.innerHTML = `❌ Nur PDF-Dateien sind erlaubt.`;
-      return;
-    }
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch("http://127.0.0.1:8000/verify-pdf", {
-      method: "POST",
-      body: formData
-    });
-    const data = await res.json();
-    if (data.valid) {
-      result.innerHTML = `
-        ✅ <strong>Gültiges Zertifikat</strong><br>
-        <ul>
-          <li><b>Name:</b> ${data.data.name || data.data.source}</li>
-          <li><b>Kurs/Quelle:</b> ${data.data.course || data.data.source}</li>
-          <li><b>Datum:</b> ${data.data.date || "–"}</li>
-          <li><b>Aussteller:</b> ${data.data.issuer || "–"}</li>
-        </ul>
-      `;
-    } else {
-      result.innerHTML = `❌ Ungültig: ${data.message}`;
-    }
-  });
-</script>
 </body>
 </html>
