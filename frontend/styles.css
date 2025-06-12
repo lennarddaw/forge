@@ -34,3 +34,15 @@ button {
 button:hover {
   background: #005fa3;
 }
+
+
+.drop-zone {
+  border: 2px dashed #666;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  transition: background-color 0.2s;
+}
+.drop-zone.hover {
+  background-color: #efefef;
+}

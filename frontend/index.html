@@ -7,64 +7,18 @@
 </head>
 <body>
   <div class="container">
-    <h1>🔍 Zertifikat verifizieren</h1>
-    <form id="verifyForm">
-      <input type="text" id="hash" placeholder="Verifikationscode (SHA256)" required>
-      <button type="submit">Prüfen</button>
-    </form>
+    <h1>🔍 PDF Signieren & Prüfen</h1>
+    <div id="dropZone" class="drop-zone">
+  <p>📄 Zieh hier deine signierte PDF hinein, um sie automatisch zu prüfen</p>
+</div>
 
     <div id="result"></div>
-
     <hr>
-<h2>📄 Zertifikat erstellen</h2>
-<form id="generateForm">
-  <input type="text" id="g_name" placeholder="Name" required>
-  <input type="text" id="g_course" placeholder="Kurs" required>
-  <input type="date" id="g_date" required>
-  <input type="text" id="g_issuer" placeholder="Aussteller" required>
-  <button type="submit">Zertifikat generieren</button>
-</form>
-
-<div id="gen_result"></div>
 
 <form action="http://127.0.0.1:8000/sign-pdf" method="post" enctype="multipart/form-data">
   <input type="file" name="file" accept="application/pdf">
   <button type="submit">PDF signieren</button>
 </form>
-
-
-<script>
-  const genForm = document.getElementById("generateForm");
-  const genResult = document.getElementById("gen_result");
-
-  genForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const payload = {
-      name: document.getElementById("g_name").value,
-      course: document.getElementById("g_course").value,
-      date: document.getElementById("g_date").value,
-      issuer: document.getElementById("g_issuer").value
-    };
-
-    const res = await fetch("http://127.0.0.1:8000/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") {
-      genResult.innerHTML = `
-        ✅ Zertifikat erstellt<br>
-        🔐 Verifikationscode: <code>${data.hash}</code><br>
-        📄 <a href="${data.pdf}" target="_blank">Zertifikat öffnen</a>
-      `;
-    } else {
-      genResult.innerText = "❌ Fehler: " + (data.message || "Unbekannt");
-    }
-  });
-</script>
 
   </div>
 
@@ -93,5 +47,44 @@
       }
     });
   </script>
+  <script>
+  const dropZone = document.getElementById("dropZone");
+  dropZone.addEventListener("dragover", e => {
+    e.preventDefault();
+    dropZone.classList.add("hover");
+  });
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("hover");
+  });
+  dropZone.addEventListener("drop", async e => {
+    e.preventDefault();
+    dropZone.classList.remove("hover");
+    const file = e.dataTransfer.files[0];
+    if (!file || file.type !== "application/pdf") {
+      result.innerHTML = `❌ Nur PDF-Dateien sind erlaubt.`;
+      return;
+    }
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("http://127.0.0.1:8000/verify-pdf", {
+      method: "POST",
+      body: formData
+    });
+    const data = await res.json();
+    if (data.valid) {
+      result.innerHTML = `
+        ✅ <strong>Gültiges Zertifikat</strong><br>
+        <ul>
+          <li><b>Name:</b> ${data.data.name || data.data.source}</li>
+          <li><b>Kurs/Quelle:</b> ${data.data.course || data.data.source}</li>
+          <li><b>Datum:</b> ${data.data.date || "–"}</li>
+          <li><b>Aussteller:</b> ${data.data.issuer || "–"}</li>
+        </ul>
+      `;
+    } else {
+      result.innerHTML = `❌ Ungültig: ${data.message}`;
+    }
+  });
+</script>
 </body>
 </html>

@@ -20,5 +20,13 @@
     "181056d6b5242672a3438e18a2816e901f64ae4050646daa7e36487fb270a73c": {
         "source": "Group 5.pdf",
         "signed": true
+    },
+    "8c5ed0f0e59f324f962fb24ec1f46f407f1ee0101542fc93a028c665d340f758": {
+        "source": "martin.pdf",
+        "signed": true
+    },
+    "18ff3d60be888db116b65c567ce410f00e978c957f1480a007f558f7da17112f": {
+        "source": "Der Hessische Landbote.pdf",
+        "signed": true
     }
 }
