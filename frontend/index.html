@@ -112,16 +112,16 @@
       e.preventDefault(); dropZone.classList.remove("hover");
       const file = e.dataTransfer.files[0];
       if (!file || file.type !== "application/pdf") {
-        result.textContent = "❌ Nur PDF-Dateien erlaubt.";
+        result.textContent = " Nur PDF-Dateien erlaubt.";
         return;
       }
       const formData = new FormData(); formData.append("file", file);
       const res = await fetch("http://127.0.0.1:8000/verify-pdf", { method: "POST", body: formData });
       const data = await res.json();
       if (data.valid) {
-        result.innerHTML = `✅ <strong>Gültiges Zertifikat</strong><ul style="margin-top:0.5rem; list-style:none; padding:0;"><li>Name: ${data.data.name||data.data.source}</li><li>Kurs: ${data.data.course||data.data.source}</li><li>Datum: ${data.data.date||"–"}</li><li>Aussteller: ${data.data.issuer||"–"}</li></ul>`;
+        result.innerHTML = `<strong>Gültiges Zertifikat</strong><ul style="margin-top:0.5rem; list-style:none; padding:0;"><li>Name: ${data.data.name||data.data.source}</li><li>Kurs: ${data.data.course||data.data.source}</li><li>Datum: ${data.data.date||"–"}</li><li>Aussteller: ${data.data.issuer||"–"}</li></ul>`;
       } else {
-        result.textContent = `❌ Ungültig: ${data.message}`;
+        result.textContent = ` Ungültig: ${data.message}`;
       }
     });
   </script>
