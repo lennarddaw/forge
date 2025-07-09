@@ -7,8 +7,8 @@
 - Hashbasierte Signierung von PDF-Dateien (keine Speicherung auf dem Server)
 - Verifikation über `/verify-pdf` anhand des eingebetteten Metadaten-Hashes
 - JSON-Register (`verify_db.json`) zur Verwaltung registrierter Dokumente
-- Kein Speichern von PDF-Dateien im Projektverzeichnis
-- FastAPI-Backend mit einfacher REST-Schnittstelle
+- Integriertes Web-Frontend zur einfachen Nutzung
+- FastAPI-Backend mit REST-Schnittstelle
 
 ## Projektstruktur
 
@@ -18,7 +18,10 @@ forge/
 │   ├── __init__.py
 │   ├── verify_api.py         # Signier- und Verifikationslogik (FastAPI)
 │   ├── verify_db.json        # Hash-basierte Signaturdatenbank
-├── frontend/                 # Optional: UI (nicht enthalten)
+│   └── frontend/             # Integriertes Web-Frontend
+│       ├── index.html        # UI zum Hochladen und Prüfen von PDFs
+│       ├── main.js           # API-Aufrufe & Event-Handling
+│       └── styles.css        # Grundlegendes Styling
 ├── venv/                     # Virtuelle Umgebung
 ├── requirements.txt          # Abhängigkeiten
 ├── start.bat                 # Lokaler Startbefehl (optional)
@@ -27,7 +30,7 @@ forge/
 
 ## API-Endpunkte
 
-### 🔏 `/sign-pdf` – PDF signieren
+### `/sign-pdf` – PDF signieren
 - **Methode:** `POST`
 - **Eingabe:** `multipart/form-data` mit PDF-Datei
 - **Ausgabe:** Direkt-Download der signierten Datei (mit eingebettetem Hash)
@@ -50,8 +53,16 @@ pip install -r requirements.txt
 uvicorn backend.verify_api:app --reload
 ```
 
-### 3. API testen
-z. B. mit [http://localhost:8000/docs](http://localhost:8000/docs) (Swagger UI)
+### 3. Frontend verwenden
+Öffne die Datei:
+```
+backend/frontend/index.html
+```
+Diese bietet eine einfache Benutzeroberfläche für Upload, Signatur und Verifikation.
+
+### 4. API testen (alternativ)
+z. B. mit Swagger UI:  
+[http://localhost:8000/docs](http://localhost:8000/docs)
 
 ## Sicherheitshinweis
 
