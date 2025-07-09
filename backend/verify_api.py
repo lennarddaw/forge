@@ -4,57 +4,75 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import json
 import os
-import hashlib
+import hashlib # wichtig für SHA256-Hashing
 from io import BytesIO
 from PyPDF2 import PdfReader, PdfWriter
 
-app = FastAPI(title="OpenCertify API")
+app = FastAPI(title="Forge API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"], # notwendig da manchmal blockiert
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-DB_PATH    = "backend/verify_db.json"
-UPLOAD_DIR = "uploads"
-SIGNED_DIR = "signed"
-for d in (UPLOAD_DIR, SIGNED_DIR, os.path.dirname(DB_PATH)):
-    os.makedirs(d, exist_ok=True)
+DB_PATH= "backend/verify_db.json"
+
+from fastapi.responses import StreamingResponse
 
 @app.post("/sign-pdf")
 async def sign_uploaded_pdf(file: UploadFile = File(...)):
     content = await file.read()
     cert_hash = hashlib.sha256(content).hexdigest()
 
+# Bisherigen Content lesen
     try:
         reader = PdfReader(BytesIO(content))
     except Exception:
         raise HTTPException(status_code=400, detail="Keine gültige PDF")
 
+# Sette Writer
     writer = PdfWriter()
     for page in reader.pages:
         writer.add_page(page)
 
-    metadata = reader.metadata or {}
-    metadata.update({"/CertHash": cert_hash})
-    writer.add_metadata(metadata)
 
-    output_path = os.path.join(SIGNED_DIR, f"signed_{file.filename}")
-    with open(output_path, "wb") as out_f:
-        writer.write(out_f)
+    metadata = reader.metadata or {} #lesen
+    metadata.update({"/CertHash": cert_hash}) # ändern
+    writer.add_metadata(metadata) # Gebe dem Writer Bescheid
+
+# BytesIO-Stream im RAM
+    output_stream = BytesIO()
+    writer.write(output_stream)
+    output_stream.seek(0)
+
+# Datenbankeintrag
     try:
         with open(DB_PATH, "r", encoding="utf-8") as f:
             db = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         db = {}
-    db[cert_hash] = {"source": file.filename, "signed": True}
+
+    db[cert_hash] = {
+        "source": file.filename,
+        "signed": True
+    }
+
     with open(DB_PATH, "w", encoding="utf-8") as f:
         json.dump(db, f, indent=4)
 
-    return FileResponse(output_path, media_type="application/pdf", filename=f"signed_{file.filename}")
+# Rückgabe: direkt zum Download
+    return StreamingResponse(
+        output_stream,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=signed_{file.filename}"
+        }
+    )
+
+
 
 @app.post("/verify-pdf")
 async def verify_uploaded_pdf(file: UploadFile = File(...)):
