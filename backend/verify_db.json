@@ -1,44 +1,4 @@
 {
-    "4f97a00875299fea81aec62b8e4575cb02f330b01bce284cb164be00f41310d6": {
-        "name": "Lennard",
-        "course": "2b23",
-        "date": "2007-06-04",
-        "issuer": "lennardddaw"
-    },
-    "cb009808c7cccd62ffab492de3ef4e7f5e07275b44feacd0d293ad09a9c85578": {
-        "name": "Lennard",
-        "course": "2b23",
-        "date": "2007-05-04",
-        "issuer": "lennardddaw"
-    },
-    "181056d6b5242672a3438e18a2816e901f64ae4050646daa7e36487fb270a73c": {
-        "source": "Group 5.pdf",
-        "signed": true
-    },
-    "8c5ed0f0e59f324f962fb24ec1f46f407f1ee0101542fc93a028c665d340f758": {
-        "source": "martin.pdf",
-        "signed": true
-    },
-    "18ff3d60be888db116b65c567ce410f00e978c957f1480a007f558f7da17112f": {
-        "source": "Der Hessische Landbote.pdf",
-        "signed": true
-    },
-    "b7b255bd095aef672b24aa71eb6ed55eda451e8da889173c522f5d3ab9612cb4": {
-        "source": "Globalisation_Englisch.pdf",
-        "signed": true
-    },
-    "fe46288eed3c86e76f9bc16f22c760534bfd7df4aa57a07b55cd37d76bba96c3": {
-        "source": "AB - Sterntaler.pdf",
-        "signed": true
-    },
-    "5c3820bc1a8a67f80b19308e32af3d69df69221fde558686889408b785bc4d0c": {
-        "source": "Religion_Klausur_12_2.pdf",
-        "signed": true
-    },
-    "2e9071e73e4d7149148a8d0a20963626010e68987c7df18c5893f7eef81fa04d": {
-        "source": "Englisch Heft.pdf",
-        "signed": true
-    },
     "47c8ef71e434b1328f3b39dae84a189cf87178b946e7071c4e99e9dec120d5b5": {
         "source": "invoice.pdf",
         "signed": true
