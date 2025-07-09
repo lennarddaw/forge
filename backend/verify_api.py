@@ -74,20 +74,20 @@ async def sign_uploaded_pdf(file: UploadFile = File(...)):
 
 
 
-@app.post("/verify-pdf")
+@app.post("/verify-pdf") # POST-Endpoint
 async def verify_uploaded_pdf(file: UploadFile = File(...)):
-    content = await file.read()
+    content = await file.read() # Wieder warten auf content und lesen
     try:
-        reader = PdfReader(BytesIO(content))
+        reader = PdfReader(BytesIO(content)) # Binärinhalt in ein lesbares PDF
     except Exception:
         raise HTTPException(status_code=400, detail="Keine gültige PDF")
 
-    metadata = reader.metadata or {}
+    metadata = reader.metadata or {} # alles wie in POST /sign-pdf
     cert_hash = metadata.get("/CertHash")
     if not cert_hash:
         return JSONResponse(status_code=400, content={"valid": False, "message": "Signatur-Metadatum nicht gefunden."})
 
-    try:
+    try: # Checke hier noch die DB, kann ja auch an ihr legen
         with open(DB_PATH, "r", encoding="utf-8") as f:
             db = json.load(f)
     except FileNotFoundError:
@@ -98,4 +98,4 @@ async def verify_uploaded_pdf(file: UploadFile = File(...)):
     if cert_hash in db:
         return {"valid": True, "data": db[cert_hash]}
     else:
-        return {"valid": False, "message": "Zertifikat nicht in der Datenbank."}
+        return {"valid": False, "message": "Zertifikat nicht in der Datenbank."} # Untescheidung, wenn DB nicht defekt, irgendwo Fehler beim Upload :)
