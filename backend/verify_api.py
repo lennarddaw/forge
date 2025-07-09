@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 import json
 import os
@@ -19,8 +20,6 @@ app.add_middleware(
 )
 
 DB_PATH= "backend/verify_db.json"
-
-from fastapi.responses import StreamingResponse
 
 @app.post("/sign-pdf")
 async def sign_uploaded_pdf(file: UploadFile = File(...)):
