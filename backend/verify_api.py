@@ -62,7 +62,6 @@ async def sign_uploaded_pdf(file: UploadFile = File(...)):
     with open(DB_PATH, "w", encoding="utf-8") as f:
         json.dump(db, f, indent=4)
 
-# Rückgabe: direkt zum Download
     return StreamingResponse(
         output_stream,
         media_type="application/pdf",
@@ -97,4 +96,5 @@ async def verify_uploaded_pdf(file: UploadFile = File(...)):
     if cert_hash in db:
         return {"valid": True, "data": db[cert_hash]}
     else:
-        return {"valid": False, "message": "Zertifikat nicht in der Datenbank."} # Untescheidung, wenn DB nicht defekt, irgendwo Fehler beim Upload :)
+        return {"valid": False, "message": "Zertifikat nicht in der Datenbank."}
+    # Untescheidung, wenn DB nicht defekt, irgendwo Fehler beim Upload :)
