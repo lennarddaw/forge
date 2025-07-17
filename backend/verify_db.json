@@ -2,5 +2,9 @@
     "47c8ef71e434b1328f3b39dae84a189cf87178b946e7071c4e99e9dec120d5b5": {
         "source": "invoice.pdf",
         "signed": true
+    },
+    "be6fefc3a2ea91e1b2b8457feb0b45c666c1f79502a886c40639a43155ad9273": {
+        "source": "wseminar_kapitel2.pdf",
+        "signed": true
     }
 }
